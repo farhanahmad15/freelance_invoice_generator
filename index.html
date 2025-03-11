@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Freelance Invoice Generator</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- jsPDF for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>
+          <i class="fas fa-file-invoice-dollar"></i> Freelance Invoice Generator
+        </h1>
+        <p>Create professional invoices in seconds</p>
+      </header>
+
+      <main>
+        <div class="template-selection">
+          <h2>Choose a Template</h2>
+          <div class="templates">
+            <div class="template active" data-template="modern">
+              <div class="template-preview modern-preview"></div>
+              <span>Modern</span>
+            </div>
+            <div class="template" data-template="classic">
+              <div class="template-preview classic-preview"></div>
+              <span>Classic</span>
+            </div>
+            <div class="template" data-template="minimal">
+              <div class="template-preview minimal-preview"></div>
+              <span>Minimal</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="invoice-form">
+          <h2>Invoice Details</h2>
+
+          <div class="form-section">
+            <h3>Your Details</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="yourName">Your Name/Business</label>
+                <input
+                  type="text"
+                  id="yourName"
+                  placeholder="Your name or business name"
+                />
+              </div>
+              <div class="form-group">
+                <label for="yourEmail">Your Email</label>
+                <input
+                  type="email"
+                  id="yourEmail"
+                  placeholder="your@email.com"
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="yourPhone">Phone Number</label>
+                <input
+                  type="tel"
+                  id="yourPhone"
+                  placeholder="Your phone number"
+                />
+              </div>
+              <div class="form-group">
+                <label for="yourAddress">Address</label>
+                <textarea
+                  id="yourAddress"
+                  placeholder="Your full address"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Client Details</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="clientName">Client Name/Business</label>
+                <input
+                  type="text"
+                  id="clientName"
+                  placeholder="Client name or business"
+                />
+              </div>
+              <div class="form-group">
+                <label for="clientEmail">Client Email</label>
+                <input
+                  type="email"
+                  id="clientEmail"
+                  placeholder="client@email.com"
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="clientPhone">Client Phone</label>
+                <input
+                  type="tel"
+                  id="clientPhone"
+                  placeholder="Client phone number"
+                />
+              </div>
+              <div class="form-group">
+                <label for="clientAddress">Client Address</label>
+                <textarea
+                  id="clientAddress"
+                  placeholder="Client's full address"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Invoice Information</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="invoiceNumber">Invoice Number</label>
+                <input type="text" id="invoiceNumber" placeholder="INV-001" />
+              </div>
+              <div class="form-group">
+                <label for="invoiceDate">Invoice Date</label>
+                <input type="date" id="invoiceDate" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="dueDate">Due Date</label>
+                <input type="date" id="dueDate" />
+              </div>
+              <div class="form-group">
+                <label for="currency">Currency</label>
+                <select id="currency">
+                  <option value="USD">USD ($)</option>
+                  <option value="EUR">EUR (€)</option>
+                  <option value="GBP">GBP (£)</option>
+                  <option value="CAD">CAD (C$)</option>
+                  <option value="AUD">AUD (A$)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Items</h3>
+            <div class="items-table">
+              <div class="items-header">
+                <div class="item-description">Description</div>
+                <div class="item-quantity">Quantity</div>
+                <div class="item-price">Unit Price</div>
+                <div class="item-total">Total</div>
+                <div class="item-actions"></div>
+              </div>
+              <div id="items-container">
+                <!-- Items will be added here dynamically -->
+                <div class="item-row">
+                  <div class="item-description">
+                    <input type="text" placeholder="Item description" />
+                  </div>
+                  <div class="item-quantity">
+                    <input type="number" min="1" value="1" title="Quantity" placeholder="Quantity" />
+                  </div>
+                  <div class="item-price">
+                    <input type="number" min="0" step="0.01" value="0.00" title="Unit Price" placeholder="Unit Price" />
+                  </div>
+                  <div class="item-total">0.00</div>
+                  <div class="item-actions">
+                    <button class="remove-item" title="Remove Item">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button id="add-item" class="btn-secondary">
+              <i class="fas fa-plus"></i> Add Item
+            </button>
+          </div>
+
+          <div class="form-section">
+            <h3>Additional Options</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="taxRate">Tax Rate (%)</label>
+                <input
+                  type="number"
+                  id="taxRate"
+                  min="0"
+                  step="0.01"
+                  value="0"
+                />
+              </div>
+              <div class="form-group">
+                <label for="discountRate">Discount (%)</label>
+                <input
+                  type="number"
+                  id="discountRate"
+                  min="0"
+                  step="0.01"
+                  value="0"
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="notes">Notes</label>
+                <textarea
+                  id="notes"
+                  placeholder="Additional notes to the client"
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <label for="paymentTerms">Payment Terms</label>
+                <textarea
+                  id="paymentTerms"
+                  placeholder="e.g., Payment due within 30 days"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="summary-section">
+            <div class="summary-row">
+              <span>Subtotal:</span>
+              <span id="subtotal">0.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Discount:</span>
+              <span id="discount">0.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Tax:</span>
+              <span id="tax">0.00</span>
+            </div>
+            <div class="summary-row total">
+              <span>Total:</span>
+              <span id="total">0.00</span>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <button id="preview-invoice" class="btn-primary">
+              <i class="fas fa-eye"></i> Preview Invoice
+            </button>
+            <button id="download-pdf" class="btn-primary">
+              <i class="fas fa-file-pdf"></i> Download PDF
+            </button>
+            <button id="print-invoice" class="btn-secondary">
+              <i class="fas fa-print"></i> Print
+            </button>
+            <button id="reset-form" class="btn-danger">
+              <i class="fas fa-redo"></i> Reset Form
+            </button>
+          </div>
+        </div>
+
+        <!-- Invoice Preview Modal -->
+        <div id="preview-modal" class="modal">
+          <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div id="invoice-preview"></div>
+            <div class="modal-actions">
+              <button id="download-from-preview" class="btn-primary">
+                <i class="fas fa-file-pdf"></i> Download PDF
+              </button>
+              <button id="print-from-preview" class="btn-secondary">
+                <i class="fas fa-print"></i> Print
+              </button>
+              <button id="edit-invoice" class="btn-secondary">
+                <i class="fas fa-edit"></i> Edit Invoice
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <footer>
+        <p>
+          Freelance Invoice Generator &copy; <span id="current-year"></span> |
+          Created with <s>😡</s> and 💙 by Farhan Ahmad
+        </p>
+      </footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
