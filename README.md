@@ -50,3 +50,7 @@ This project is licensed under the [MIT License](LICENSE).
 If you find this invoice generator helpful, consider starring the repository! ⭐
 
 Happy invoicing! 🚀
+
+## TODO's
+- Add a send as email function
+- Clean up the code
